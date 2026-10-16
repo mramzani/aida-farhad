@@ -56,8 +56,7 @@ const CONFIG = {
   // Gallery: output of `node scripts/optimize-images.js` goes here.
   // wide: true => spans the full row.
   gallery: [
-    { thumb: 'assets/gallery/img_3546-600.webp', full: 'assets/gallery/img_3546-1600.webp', w: 720, h: 1280, alt: 'عکس ۱' },
-    { thumb: 'assets/gallery/img_6011-600.webp', full: 'assets/gallery/img_6011-1600.webp', w: 1203, h: 1280, alt: 'عکس ۲' },
+    { thumb: 'assets/gallery/aida-farhad-600.webp', full: 'assets/gallery/aida-farhad-1600.webp', w: 960, h: 1280, alt: 'آیدا و فرهاد' },
   ],
 
   music: {
@@ -504,6 +503,12 @@ const CONFIG = {
       img.width = 600;
       img.height = Math.round(600 * ((item.h || 4) / (item.w || 3)));
       img.addEventListener('load', () => img.classList.add('is-loaded'), { once: true });
+      if (item.full && item.w) {
+        // full-row items need more than the 600px thumb on high-DPR phones
+        const fullRow = item.wide || items.length === 1;
+        img.srcset = `${item.thumb} 600w, ${item.full} ${item.w}w`;
+        img.sizes = fullRow ? '(max-width: 480px) 100vw, 480px' : '(max-width: 480px) 50vw, 240px';
+      }
       img.src = item.thumb;
       if (img.complete) img.classList.add('is-loaded');
       btn.appendChild(img);
