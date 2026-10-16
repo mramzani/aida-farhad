@@ -4,43 +4,45 @@
 const CONFIG = {
   // Absolute event time (Tehran, +03:30). Never depends on the guest's timezone.
   event: {
-    start: '2026-10-19T19:00:00+03:30',
-    end: '2026-10-19T23:59:00+03:30',
-    calendarTitle: 'عروسی امید و یلدا',
-    calendarFileName: 'omid-yalda-wedding.ics',
-    calendarDescription: 'دوشنبه ۲۷ مهر ۱۴۰۵ — از ساعت ۷ بعد از ظهر',
+    start: '2026-09-25T19:00:00+03:30',
+    end: '2026-09-25T23:59:00+03:30',
+    calendarTitle: 'عروسی آیدا و فرهاد',
+    calendarFileName: 'aida-farhad-wedding.ics',
+    calendarDescription: 'جمعه ۳ مهر ۱۴۰۵ — از ساعت ۷ بعد از ظهر',
   },
 
-  // Venue. Coordinates are from the Balad place page.
+  // Venue. TODO: fill lat/lng (or paste place links) once the exact pin is known.
   venue: {
-    name: 'تالار فروزانی',
-    lat: 36.554386,
-    lng: 53.121414,
+    name: 'تالار مجلل، ساری، کیلومتر ۱۵ جاده دریا',
+    lat: null,
+    lng: null,
     links: {
-      neshan: 'https://neshan.org/maps/places/d1102e01b0001169b90b6ff43ea9c3df',
-      // null => built from lat/lng
-      balad: 'https://balad.ir/p/%D8%AA%D8%A7%D9%84%D8%A7%D8%B1-%D8%B9%D8%B1%D9%88%D8%B3%DB%8C-%D9%81%D8%B1%D9%88%D8%B2%D8%A7%D9%86%DB%8C_ceremonial-services-PV2RL4A79M1Yle#17/36.554386/53.121414',
-      google: 'https://www.google.com/maps/search/?api=1&query=36.554386,53.121414',
+      // null => built from lat/lng; button is hidden if both are missing
+      neshan: null,
+      balad: null,
+      google: 'https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent('تالار مجلل ساری جاده دریا'),
     },
   },
 
   // All user-facing texts. "\n" = line break.
   texts: {
-    couple: 'Yalda & Omid',
+    couple: 'Aida & Farhad',
     introEyebrow: 'دعوت‌نامه عروسی',
     introHint: 'برای باز کردن لمس کنید',
     opening: 'به نام عشق',
     lead: 'در روزی که عشقم رنگ خاطره‌ای می‌گیرد\nکنارمان باشید ...',
-    names: 'Yalda & Omid',
-    date: 'دوشنبه ۲۷ مهر ۱۴۰۵\nموعد دیدار ما',
+    names: 'Aida & Farhad',
+    date: 'جمعه ۳ مهر ۱۴۰۵\nموعد دیدار ما',
     time: 'از ساعت ۷ بعد از ظهر\nتا خاموشی ستارگان ✨',
-    venue: 'تالار فروزانی',
+    venue: 'تالار مجلل',
+    address: 'ساری، کیلومتر ۱۵ جاده دریا',
     note: 'بودن شما، زیباترین خاطره‌ای است که می‌توانیم\nاز این شب به یادگار داشته باشیم.',
     countdownTitle: 'تا لحظه‌ی دیدار',
     tonight: 'امشب شب ماست ✨',
     thanks: 'از اینکه کنارمان بودید، سپاسگزاریم 🤍',
     addToCalendar: 'افزودن به تقویم',
-    venueName: 'تالار فروزانی',
+    venueName: 'تالار مجلل',
     galleryTitle: 'قاب خاطره‌ها',
     closing: 'چشم‌انتظار حضور گرمتان هستیم',
     share: 'ارسال دعوت‌نامه برای دیگران',
@@ -64,12 +66,12 @@ const CONFIG = {
   },
 
   share: {
-    title: 'دعوت‌نامه عروسی امید و یلدا',
-    text: 'دوشنبه ۲۷ مهر ۱۴۰۵ — تالار فروزانی',
+    title: 'دعوت‌نامه عروسی آیدا و فرهاد',
+    text: 'جمعه ۳ مهر ۱۴۰۵ — تالار مجلل، ساری',
     url: null, // null => current page URL (without query string)
   },
 
-  // Simulate "now" for testing, e.g. '2026-10-19T12:00:00+03:30'.
+  // Simulate "now" for testing, e.g. '2026-09-25T12:00:00+03:30'.
   // The ?now= query param overrides this. Presets: before | today | after
   debugNow: null,
 };
@@ -129,12 +131,15 @@ const CONFIG = {
     });
 
     const { lat, lng, links } = CONFIG.venue;
-    $('#link-neshan').href = links.neshan ||
-      `https://neshan.org/maps/@${lat},${lng},16z`;
-    $('#link-balad').href = links.balad ||
-      `https://balad.ir/location?latitude=${lat}&longitude=${lng}&zoom=16`;
-    $('#link-google').href = links.google ||
-      `https://www.google.com/maps?q=${lat},${lng}`;
+    const hasCoords = lat != null && lng != null;
+    const setLink = (sel, link, fromCoords) => {
+      const href = link || (hasCoords ? fromCoords : null);
+      if (href) $(sel).href = href;
+      else $(sel).hidden = true;
+    };
+    setLink('#link-neshan', links.neshan, `https://neshan.org/maps/@${lat},${lng},16z`);
+    setLink('#link-balad', links.balad, `https://balad.ir/location?latitude=${lat}&longitude=${lng}&zoom=16`);
+    setLink('#link-google', links.google, `https://www.google.com/maps?q=${lat},${lng}`);
   }
 
   /* ==========================================================================
@@ -389,7 +394,7 @@ const CONFIG = {
     return new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
   }
   function icsLocal(iso) {
-    // "2026-10-19T19:00:00+03:30" -> "20261019T190000"
+    // "2026-09-25T19:00:00+03:30" -> "20261019T190000"
     return iso.slice(0, 19).replace(/[-:]/g, '');
   }
   function icsEscape(s) {
@@ -420,7 +425,7 @@ const CONFIG = {
     const lines = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//Omid & Yalda//Wedding Invitation//FA',
+      'PRODID:-//Aida & Farhad//Wedding Invitation//FA',
       'CALSCALE:GREGORIAN',
       'METHOD:PUBLISH',
       'BEGIN:VTIMEZONE',
@@ -433,14 +438,14 @@ const CONFIG = {
       'END:STANDARD',
       'END:VTIMEZONE',
       'BEGIN:VEVENT',
-      `UID:omid-yalda-${icsLocal(e.start)}@invitation`,
+      `UID:aida-farhad-${icsLocal(e.start)}@invitation`,
       `DTSTAMP:${icsDate(Date.now())}`,
       `DTSTART;TZID=Asia/Tehran:${icsLocal(e.start)}`,
       `DTEND;TZID=Asia/Tehran:${icsLocal(e.end)}`,
       `SUMMARY:${icsEscape(e.calendarTitle)}`,
       `LOCATION:${icsEscape(v.name)}`,
       `DESCRIPTION:${icsEscape(e.calendarDescription)}`,
-      `GEO:${v.lat};${v.lng}`,
+      ...(v.lat != null && v.lng != null ? [`GEO:${v.lat};${v.lng}`] : []),
       'BEGIN:VALARM',
       'ACTION:DISPLAY',
       `DESCRIPTION:${icsEscape(e.calendarTitle)}`,

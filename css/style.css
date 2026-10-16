@@ -457,6 +457,11 @@ img, svg { display: block; }
   font-weight: 700;
   color: var(--accent);
 }
+.invite__address {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--muted);
+}
 .invite__note {
   margin-top: 30px;
   font-size: clamp(13px, 3.75vw, 15px);
@@ -622,6 +627,12 @@ img, svg { display: block; }
    5. Venue
    ========================================================================== */
 
+.venue__address {
+  margin: -16px 0 20px;
+  font-size: 15px;
+  color: var(--muted);
+  text-align: center;
+}
 .venue__card {
   position: relative;
   width: 100%;
@@ -666,7 +677,8 @@ img, svg { display: block; }
   margin-top: 18px;
 }
 .venue__links .btn { padding: 0 12px; font-size: 14px; }
-.venue__links .btn:first-child { grid-column: 1 / -1; }
+.venue__links .btn:first-child,
+.venue__links .btn[hidden] + .btn[hidden] + .btn { grid-column: 1 / -1; }
 
 /* ==========================================================================
    6. Gallery
